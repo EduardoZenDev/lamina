@@ -19,5 +19,9 @@ return [
     // ...    'username' => 'tu_usuario',
     // ...    'password' => 'tu_contraseña',
     // ...],
-    
+    'dependencies' => [
+        'factories' => [
+            Laminas\Mvc\Application::class => Laminas\Mvc\Service\ApplicationFactory::class,
+        ],
+    ],
 ];

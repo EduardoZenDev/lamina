@@ -2,6 +2,8 @@
 
 use Laminas\Mvc\Application;
 use Laminas\Stdlib\ArrayUtils;
+use Laminas\ServiceManager\ServiceManager;
+use Laminas\Mvc\Factory\ApplicationFactory;
 
 // Activa el modo de depuración temporalmente
 ini_set('display_errors', 1);
@@ -22,12 +24,18 @@ if (file_exists(__DIR__ . '/development.config.php')) {
 
 // Verifica si la clave de dependencias existe
 if (!isset($appConfig['dependencies'])) {
-    die('Error: La configuración no contiene la clave "dependencies".');
+    $appConfig['dependencies'] = []; // Asegúrate de que exista
 }
 
-// Inicia la aplicación
-try {
-    return Application::init($appConfig)->getServiceManager();
-} catch (\Throwable $e) {
-    die('Error en la inicialización: ' . $e->getMessage());
-}
+// Añadir el servicio de la aplicación al contenedor
+$appConfig['dependencies']['factories'][Application::class] = ApplicationFactory::class;
+
+// Inicia el contenedor de servicios
+$serviceManager = new ServiceManager([
+    'factories' => [
+        Application::class => ApplicationFactory::class, // Fábrica para la clase Application
+    ]
+]);
+
+// Devuelve el contenedor de servicios
+return $serviceManager;
